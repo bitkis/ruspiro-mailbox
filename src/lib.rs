@@ -202,6 +202,10 @@ impl Mailbox {
         Mailbox
     }
 
+    pub const fn default() -> Self {
+        Mailbox
+    }
+
     /// Send a mailbox batch message
     /// # Example
     /// ```no_run
@@ -211,12 +215,12 @@ impl Mailbox {
     /// let _ = MAILBOX.take_for(|mb| mb.send_batch(batch));
     /// # }
     /// ```
-    pub fn send_batch<T>(&self, batch: MailboxBatch<T>) -> MailboxResult<MailboxBatch<T>> {
+    pub fn send_batch<T>(&mut self, batch: MailboxBatch<T>) -> MailboxResult<MailboxBatch<T>> {
         send_batch(MailboxChannel::PropertyTagsVc, batch)
     }
 
     /// Get the firmware revision of this Raspberry Pi
-    pub fn get_firmware_revision(&self) -> MailboxResult<u32> {
+    pub fn get_firmware_revision(&mut self) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             FirmwareRevisionGet::new().into(),
@@ -225,14 +229,14 @@ impl Mailbox {
     }
 
     /// Get the board model of this Raspberry Pi
-    pub fn get_board_model(&self) -> MailboxResult<u32> {
+    pub fn get_board_model(&mut self) -> MailboxResult<u32> {
         send_message(MailboxChannel::PropertyTagsVc, BoardModelGet::new().into())
             .map(|message| message.response().board_model())
     }
 
     /// Get the board revision of this Raspberry Pi. Check out https://www.raspberrypi.org/documentation/hardware/raspberrypi/revision-codes/README.md
     /// for the encoding of the returned value
-    pub fn get_board_revision(&self) -> MailboxResult<u32> {
+    pub fn get_board_revision(&mut self) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             BoardRevisionGet::new().into(),
@@ -241,7 +245,7 @@ impl Mailbox {
     }
 
     /// Get the MAC address of this Raspberry Pi
-    pub fn get_board_mac_address(&self) -> MailboxResult<[u8; 6]> {
+    pub fn get_board_mac_address(&mut self) -> MailboxResult<[u8; 6]> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             BoardMACAddressGet::new().into(),
@@ -259,7 +263,7 @@ impl Mailbox {
     /// println!("ARM memory address: {}, size: {}", arm_memory.0, arm_memory.1);
     /// # }
     /// ```
-    pub fn get_arm_memory(&self) -> MailboxResult<(u32, u32)> {
+    pub fn get_arm_memory(&mut self) -> MailboxResult<(u32, u32)> {
         send_message(MailboxChannel::PropertyTagsVc, ArmMemoryGet::new().into()).map(|message| {
             let response = message.response();
             (response.base_address(), response.size())
@@ -276,7 +280,7 @@ impl Mailbox {
     /// println!("VC memory address: {}, size: {}", vc_memory.0, vc_memory.1);
     /// # }
     /// ```
-    pub fn get_vc_memory(&self) -> MailboxResult<(u32, u32)> {
+    pub fn get_vc_memory(&mut self) -> MailboxResult<(u32, u32)> {
         send_message(MailboxChannel::PropertyTagsVc, VcMemoryGet::new().into()).map(|message| {
             let response = message.response();
             (response.base_address(), response.size())
@@ -286,7 +290,7 @@ impl Mailbox {
     /// Get the active DMA channels.<br>
     /// Bits 0-15  of the response represents the DMA channels 0-15. If the corresponding bit is set for a
     /// channel it is usable. Bits 16-31 are reserved
-    pub fn get_dma_channels(&self) -> MailboxResult<u32> {
+    pub fn get_dma_channels(&mut self) -> MailboxResult<u32> {
         send_message(MailboxChannel::PropertyTagsVc, DmaChannelsGet::new().into())
             .map(|message| message.response().channel_mask())
     }
@@ -301,7 +305,7 @@ impl Mailbox {
     /// let power_state = MAILBOX.take_for(|mb| mb.get_powerstate(DeviceId::SdCard)).unwrap();
     /// # }
     /// ```
-    pub fn get_powerstate(&self, device_id: DeviceId) -> MailboxResult<u32> {
+    pub fn get_powerstate(&mut self, device_id: DeviceId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             PowerStateGet::new(device_id).into(),
@@ -323,7 +327,7 @@ impl Mailbox {
     ///     .unwrap();
     /// # }
     /// ```
-    pub fn set_powerstate(&self, device_id: DeviceId, state: u32) -> MailboxResult<u32> {
+    pub fn set_powerstate(&mut self, device_id: DeviceId, state: u32) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             PowerStateSet::new(device_id, state).into(),
@@ -341,7 +345,7 @@ impl Mailbox {
     /// let clock_state = MAILBOX.take_for(|mb| mb.get_clockstate(ClockId::Pwm)).unwrap();
     /// # }
     /// ```
-    pub fn get_clockstate(&self, clock_id: ClockId) -> MailboxResult<u32> {
+    pub fn get_clockstate(&mut self, clock_id: ClockId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             ClockStateGet::new(clock_id).into(),
@@ -362,7 +366,7 @@ impl Mailbox {
     ///     .unwrap();
     /// # }
     /// ```
-    pub fn set_clockstate(&self, clock_id: ClockId, state: u32) -> MailboxResult<u32> {
+    pub fn set_clockstate(&mut self, clock_id: ClockId, state: u32) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             ClockStateSet::new(clock_id, state).into(),
@@ -379,7 +383,7 @@ impl Mailbox {
     /// let clock_rate = MAILBOX.take_for(|mb| mb.get_clockrate(ClockId::Core)).unwrap();
     /// # }
     /// ```
-    pub fn get_clockrate(&self, clock_id: ClockId) -> MailboxResult<u32> {
+    pub fn get_clockrate(&mut self, clock_id: ClockId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             ClockrateGet::new(clock_id).into(),
@@ -397,7 +401,7 @@ impl Mailbox {
     ///     .unwrap();
     /// # }
     /// ```
-    pub fn set_clockrate(&self, clock_id: ClockId, rate: u32) -> MailboxResult<u32> {
+    pub fn set_clockrate(&mut self, clock_id: ClockId, rate: u32) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             ClockrateSet::new(clock_id, rate, 0x0).into(),
@@ -406,7 +410,7 @@ impl Mailbox {
     }
 
     /// Get the maximum available clock rate for the given clock id
-    pub fn get_max_clock_rate(&self, clock_id: ClockId) -> MailboxResult<u32> {
+    pub fn get_max_clock_rate(&mut self, clock_id: ClockId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             MaxClockrateGet::new(clock_id).into(),
@@ -415,7 +419,7 @@ impl Mailbox {
     }
 
     /// Get the minimum available clock rate for the given clock id
-    pub fn get_min_clock_rate(&self, clock_id: ClockId) -> MailboxResult<u32> {
+    pub fn get_min_clock_rate(&mut self, clock_id: ClockId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             MinClockrateGet::new(clock_id).into(),
@@ -425,7 +429,7 @@ impl Mailbox {
 
     /// Get the current voltage of the given [VoltageId]. The value represents an offset from
     /// 1.2V in units of 0.025V.
-    pub fn get_voltage(&self, voltage_id: VoltageId) -> MailboxResult<u32> {
+    pub fn get_voltage(&mut self, voltage_id: VoltageId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             VoltageGet::new(voltage_id).into(),
@@ -435,7 +439,7 @@ impl Mailbox {
 
     /// Set the current voltage for the given [VoltageId]. The value represents an offset from
     /// 1.2V in units of 0.025V.
-    pub fn set_voltage(&self, voltage_id: VoltageId, value: u32) -> MailboxResult<u32> {
+    pub fn set_voltage(&mut self, voltage_id: VoltageId, value: u32) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             VoltageSet::new(voltage_id, value).into(),
@@ -445,7 +449,7 @@ impl Mailbox {
 
     /// Get the maximum voltage of the given [VoltageId]. The value represents an offset from
     /// 1.2V in units of 0.025V.
-    pub fn get_max_voltage(&self, voltage_id: VoltageId) -> MailboxResult<u32> {
+    pub fn get_max_voltage(&mut self, voltage_id: VoltageId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             MaxVoltageGet::new(voltage_id).into(),
@@ -455,7 +459,7 @@ impl Mailbox {
 
     /// Get the minimum voltage of the given [VoltageId]. The value represents an offset from
     /// 1.2V in units of 0.025V.
-    pub fn get_min_voltage(&self, voltage_id: VoltageId) -> MailboxResult<u32> {
+    pub fn get_min_voltage(&mut self, voltage_id: VoltageId) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             MinVoltageGet::new(voltage_id).into(),
@@ -464,7 +468,7 @@ impl Mailbox {
     }
 
     /// Get the current temperature in thousandths of a degree Celsius.
-    pub fn get_temperature(&self) -> MailboxResult<u32> {
+    pub fn get_temperature(&mut self) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             TemperatureGet::new(0x0).into(),
@@ -474,7 +478,7 @@ impl Mailbox {
 
     /// Get the maximum safe temperature in thousandths of a degree Celsius. Above this temperature
     /// overclocking/turbo might get deactivated
-    pub fn get_max_temperature(&self) -> MailboxResult<u32> {
+    pub fn get_max_temperature(&mut self) -> MailboxResult<u32> {
         send_message(
             MailboxChannel::PropertyTagsVc,
             MaxTemperatureGet::new(0x0).into(),

@@ -187,7 +187,7 @@ property_tag!(
 );
 
 property_tag!(
-    /// Retrieve the board revision code. Refer to 
+    /// Retrieve the board revision code. Refer to
     /// https://www.raspberrypi.org/documentation/hardware/raspberrypi/revision-codes/README.md for
     /// the encoding of it.
     BoardRevisionGet: {
@@ -501,7 +501,7 @@ property_tag!(
 property_tag!(
     /// Set the physical display/framebuffer size which actually is the the size of the allocated
     /// frame buffer but usually larger than the displayed part that is passed to the monitor. The size
-    /// returned by this tag might not match the requested size but is the closest supported one or 
+    /// returned by this tag might not match the requested size but is the closest supported one or
     /// 0 if no matching supported configuration could be determined.
     PhysicalSizeSet: {
         REQUEST: {
@@ -633,7 +633,7 @@ property_tag!(
 );
 
 property_tag!(
-    /// Retrieve the current offset that is applied when retrieving the virtual display from the 
+    /// Retrieve the current offset that is applied when retrieving the virtual display from the
     /// physical one.
     VirtualOffsetGet: {
         REQUEST: {},
@@ -645,7 +645,7 @@ property_tag!(
 );
 
 property_tag!(
-    /// Set the current offset that is applied when retrieving the virtual display from the 
+    /// Set the current offset that is applied when retrieving the virtual display from the
     /// physical one.
     VirtualOffsetSet: {
         REQUEST: {

@@ -17,7 +17,7 @@ use ruspiro_cache as cache;
 use ruspiro_register::define_mmio_register;
 
 // MMIO base address for peripherals
-#[cfg(feature = "ruspiro_pi3")]
+#[cfg(any(feature = "ruspiro_pi2", feature = "ruspiro_pi3"))]
 const PERIPHERAL_BASE: u32 = 0x3F00_0000;
 
 // Mailbox MMIO base address
